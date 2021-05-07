@@ -1,6 +1,5 @@
 'use strict';
 
-const Wifi = require('rpi-wifi-connection');
 const express = require('express');
 const routerServer = express.Router();
 var cors = require('cors');
