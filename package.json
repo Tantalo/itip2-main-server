@@ -1,0 +1,24 @@
+{
+  "name": "@Tantalo/itip2-main-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "node server",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tantalo/itip2-main-server.git"
+  },
+  "keywords": [
+    "itip2"
+  ],
+  "author": "Tantalo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Tantalo/itip2-main-server/issues"
+  },
+  "homepage": "https://github.com/Tantalo/itip2-main-server#readme",
+  "dependencies": {}
+}
