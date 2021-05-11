@@ -38,7 +38,7 @@ var macAddressUserDB = {};
 
                 const promise1 = new Promise((resolve, reject) => {
                     connection.query('insert into LogCommands (MacAddress, Timestamp, Command, Status) values ?',
-                    Array.from(logCommands, cmd => [macAddress, cmd.timestamp, cmd.command, cmd.status]), function (err, result) {
+                    [Array.from(logCommands, cmd => [macAddress, cmd.timestamp, cmd.command, cmd.status])], function (err, result) {
                         if (err) {
                             console.log('LogCommands: ', err);
                         } else {
@@ -50,7 +50,7 @@ var macAddressUserDB = {};
 
                 const promise2 = new Promise((resolve, reject) => {
                     connection.query('insert into LogEvents (MacAddress, Timestamp, EventName) values ?',
-                    Array.from(logEvents, cmd => [macAddress, cmd.timestamp, cmd.eventName]), function (err, result) {
+                    [Array.from(logEvents, cmd => [macAddress, cmd.timestamp, cmd.eventName])], function (err, result) {
                         if (err) {
                             console.log('LogEvents: ', err);
                         } else {
