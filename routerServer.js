@@ -46,22 +46,29 @@ var macAddressUserDB = {};
             }
 
             let rtn = null;
-            var connection = getConnection();
-            connection.connect();
 
-            connection.query('SELECT UserDB from ' + database + '.MacAddressUserDB where MacAddress = ?', macAddress, function (error, results, fields) {
-                if (error) {
-                    console.log('Error selecting user db', error);
-                } else {
-                    console.log('results[0]: ', results[0]);
-                    rtn = results[0].UserDB;
-                    macAddressUserDB[macAddress] = rtn;
-                }
-            });
+            try {
+                var connection = getConnection();
+                connection.connect();
 
-            connection.end();
+                connection.query('SELECT UserDB from ' + database + '.MacAddressUserDB where MacAddress = ?', macAddress, function (error, results, fields) {
 
-            resolve(rtn);
+                    if (error) {
+                        console.log('Error selecting user db', error);
+                    } else {
+                        console.log('results[0]: ', results[0]);
+                        rtn = results[0].UserDB;
+                        macAddressUserDB[macAddress] = rtn;
+                    }
+
+                    connection.end();
+                    resolve(rtn);
+                });
+            } catch (e) {
+                console.log('Error in getUserDB', e);
+                reject(e);
+            }
+
         });
     }
 
