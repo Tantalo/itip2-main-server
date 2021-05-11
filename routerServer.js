@@ -26,9 +26,8 @@ var macAddressUserDB = {};
 
 
     routerServer.post('/log', (req,res) => {
-        var ssid = req.body.ssid;
-        var pwd = req.body.pwd;
-        console.log('pwd: ' + pwd);
+        var body = req.body;
+        console.log('body: ' + body);
     });
 
     routerServer.post('/getUserDb', (req,res) => {
@@ -60,12 +59,14 @@ var macAddressUserDB = {};
                             macAddressUserDB[macAddress] = rtn;
                         }
 
-                        connection.end();
                         resolve(rtn);
                     });
                 } catch (e) {
                     console.log('Error in getUserDB', e);
                     reject(e);
+                } finally {
+                    if (connection)
+                        connection.end();
                 }
             }
         });
