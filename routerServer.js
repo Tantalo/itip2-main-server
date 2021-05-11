@@ -1,9 +1,9 @@
 'use strict';
 
 const db_host = 'localhost';
-const db_user = 'me';
-const db_pwd = '';
-const database = ''
+const db_user = 'root';
+const db_pwd = 'newpass';
+const database = 'itip2'
 
 const express = require('express');
 const routerServer = express.Router();
@@ -47,7 +47,7 @@ var macAddressUserDB = {};
         var connection = getConnection();
         connection.connect();
 
-        connection.query('SELECT UserDb from itip2.MacAddressUserDB where MacAddress = ?', macAddress, function (error, results, fields) {
+        connection.query('SELECT UserDb from ' + database + '.MacAddressUserDB where MacAddress = ?', macAddress, function (error, results, fields) {
             if (error) {
                 console.log('Error selecting user db', error);
             } else {
