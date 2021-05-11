@@ -44,7 +44,7 @@ var macAddressUserDB = {};
                         } else {
                             console.log("Number of LogCommands inserted: " + result.affectedRows);
                         }
-                        promise1.resolve(true);
+                        resolve(true);
                     });
                 });
 
@@ -56,7 +56,7 @@ var macAddressUserDB = {};
                         } else {
                             console.log("Number of LogEvents inserted: " + result.affectedRows);
                         }
-                        promise2.resolve(true);
+                        resolve(true);
                     });
                 });
 
