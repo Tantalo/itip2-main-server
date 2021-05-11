@@ -51,6 +51,7 @@ var macAddressUserDB = {};
             if (error) {
                 console.log('Error selecting user db', error);
             } else {
+                console.log('results: ', results);
                 rtn = results[0].UserDb;
                 macAddressUserDB[macAddress] = rtn;
             }
