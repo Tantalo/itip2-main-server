@@ -34,32 +34,35 @@ var macAddressUserDB = {};
     routerServer.post('/getUserDb', (req,res) => {
         var macAddress = req.body.macAddress;
         console.log('macAddress: ' + macAddress);
-        let userDb = getUserDb(macAddress);
-        res.send(userDb);
+        getUserDb(macAddress).then(userDb => {
+            res.send(userDb);
+        });
     });
 
     function getUserDb(macAddress) {
-        if (macAddressUserDB[macAddress] && macAddressUserDB[macAddress].trim() !== "") {
-            return macAddressUserDB[macAddress];
-        }
-
-        let rtn = null;
-        var connection = getConnection();
-        connection.connect();
-
-        connection.query('SELECT UserDb from ' + database + '.MacAddressUserDB where MacAddress = ?', macAddress, function (error, results, fields) {
-            if (error) {
-                console.log('Error selecting user db', error);
-            } else {
-                console.log('results: ', results);
-                rtn = results[0].UserDb;
-                macAddressUserDB[macAddress] = rtn;
+        return new Promise((resolve, reject) => {
+            if (macAddressUserDB[macAddress] && macAddressUserDB[macAddress].trim() !== "") {
+                resolve(macAddressUserDB[macAddress]);
             }
-          });
 
-        connection.end();
+            let rtn = null;
+            var connection = getConnection();
+            connection.connect();
 
-        return rtn;
+            connection.query('SELECT UserDB from ' + database + '.MacAddressUserDB where MacAddress = ?', macAddress, function (error, results, fields) {
+                if (error) {
+                    console.log('Error selecting user db', error);
+                } else {
+                    console.log('results[0]: ', results[0]);
+                    rtn = results[0].UserDB;
+                    macAddressUserDB[macAddress] = rtn;
+                }
+            });
+
+            connection.end();
+
+            resolve(rtn);
+        });
     }
 
     function getConnection() {
