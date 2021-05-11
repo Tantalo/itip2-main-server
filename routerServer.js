@@ -26,20 +26,62 @@ var macAddressUserDB = {};
 
 
     routerServer.post('/log', (req,res) => {
-        var body = req.body;
-        console.log('body: ', body);
-        res.json(body);
+        console.log('body: ', req.body);
+        var macAddress = req.body.macAddress;
+        var logCommands = req.body.logCommands;
+        var logEvents = req.body.logEvents;
+
+        getUserDB(macAddress).then(userDB => {
+            try {
+                var connection = getConnection(userDB);
+                connection.connect();
+
+                const promise1 = new Promise((resolve, reject) => {
+                    con.query('insert into LogCommands (MacAddress, Timestamp, Command, Status) values ?',
+                    Array.from(logCommands, cmd => [macAddress, cmd.timestamp, cmd.command, cmd.status]), function (err, result) {
+                        if (err) {
+                            console.log('LogCommands: ', err);
+                        } else {
+                            console.log("Number of LogCommands inserted: " + result.affectedRows);
+                        }
+                        promise1.resolve(true);
+                    });
+                });
+
+                const promise2 = new Promise((resolve, reject) => {
+                    con.query('insert into LogEvents (MacAddress, Timestamp, EventName) values ?',
+                    Array.from(logEvents, cmd => [macAddress, cmd.timestamp, cmd.eventName]), function (err, result) {
+                        if (err) {
+                            console.log('LogEvents: ', err);
+                        } else {
+                            console.log("Number of LogEvents inserted: " + result.affectedRows);
+                        }
+                        promise2.resolve(true);
+                    });
+                });
+
+                Promise.all([promise1, promise2]).then(() => {
+                    res.send('Ok');
+                });
+            } catch(e) {
+                res.send(e);
+            } finally {
+                if (connection)
+                    connection.end();
+            }
+        });
+
     });
 
-    routerServer.post('/getUserDb', (req,res) => {
+    routerServer.post('/getUserDB', (req,res) => {
         var macAddress = req.body.macAddress;
         console.log('macAddress: ' + macAddress);
-        getUserDb(macAddress).then(userDb => {
-            res.send(userDb);
+        getUserDB(macAddress).then(userDB => {
+            res.send(userDB);
         });
     });
 
-    function getUserDb(macAddress) {
+    function getUserDB(macAddress) {
         return new Promise((resolve, reject) => {
             if (macAddressUserDB[macAddress] && macAddressUserDB[macAddress].trim() !== "") {
                 resolve(macAddressUserDB[macAddress]);
@@ -73,12 +115,12 @@ var macAddressUserDB = {};
         });
     }
 
-    function getConnection() {
+    function getConnection(db) {
         var connection = mysql.createConnection({
             host     : db_host,
             user     : db_user,
             password : db_pwd,
-            database : database
+            database : db ? db : database
         });
         return connection;
     }
