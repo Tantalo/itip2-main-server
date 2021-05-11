@@ -28,6 +28,7 @@ var macAddressUserDB = {};
     routerServer.post('/log', (req,res) => {
         var body = req.body;
         console.log('body: ' + body);
+        res.json(body);
     });
 
     routerServer.post('/getUserDb', (req,res) => {
