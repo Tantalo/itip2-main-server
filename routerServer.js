@@ -53,7 +53,7 @@ var macAddressUserDB = {};
                 });
 
                 const promise2 = new Promise((resolve, reject) => {
-                    if (Array.isArray(logEvents) && logCommands.length > 0) {
+                    if (Array.isArray(logEvents) && logEvents.length > 0) {
                         connection.query('insert into LogEvents (MacAddress, Timestamp, EventName) values ?',
                         [Array.from(logEvents, cmd => [macAddress, cmd.timestamp, cmd.eventName])], function (err, result) {
                             if (err) {
