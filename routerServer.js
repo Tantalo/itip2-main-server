@@ -2,7 +2,7 @@
 
 const db_host = 'localhost';
 const db_user = 'root';
-const db_pwd = 'newpass';
+const db_pwd = 'Giacobbe$1';
 const database = 'itip2'
 
 const express = require('express');
@@ -37,27 +37,35 @@ var macAddressUserDB = {};
                 connection.connect();
 
                 const promise1 = new Promise((resolve, reject) => {
-                    connection.query('insert into LogCommands (MacAddress, Timestamp, Command, Status) values ?',
-                    [Array.from(logCommands, cmd => [macAddress, cmd.timestamp, cmd.command, cmd.status])], function (err, result) {
-                        if (err) {
-                            console.log('LogCommands: ', err);
-                        } else {
-                            console.log("Number of LogCommands inserted: " + result.affectedRows);
-                        }
+                    if (Array.isArray(logCommands) && logCommands.length > 0) {
+                        connection.query('insert into LogCommands (MacAddress, Timestamp, Command, Status) values ?',
+                        [Array.from(logCommands, cmd => [macAddress, cmd.timestamp, cmd.command, cmd.status])], function (err, result) {
+                            if (err) {
+                                console.log('LogCommands: ', err);
+                            } else {
+                                console.log("Number of LogCommands inserted: " + result.affectedRows);
+                            }
+                            resolve(true);
+                        });
+                    } else {
                         resolve(true);
-                    });
+                    }
                 });
 
                 const promise2 = new Promise((resolve, reject) => {
-                    connection.query('insert into LogEvents (MacAddress, Timestamp, EventName) values ?',
-                    [Array.from(logEvents, cmd => [macAddress, cmd.timestamp, cmd.eventName])], function (err, result) {
-                        if (err) {
-                            console.log('LogEvents: ', err);
-                        } else {
-                            console.log("Number of LogEvents inserted: " + result.affectedRows);
-                        }
+                    if (Array.isArray(logEvents) && logCommands.length > 0) {
+                        connection.query('insert into LogEvents (MacAddress, Timestamp, EventName) values ?',
+                        [Array.from(logEvents, cmd => [macAddress, cmd.timestamp, cmd.eventName])], function (err, result) {
+                            if (err) {
+                                console.log('LogEvents: ', err);
+                            } else {
+                                console.log("Number of LogEvents inserted: " + result.affectedRows);
+                            }
+                            resolve(true);
+                        });
+                    } else {
                         resolve(true);
-                    });
+                    }
                 });
 
                 Promise.all([promise1, promise2]).then(() => {
