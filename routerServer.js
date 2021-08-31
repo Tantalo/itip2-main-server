@@ -144,6 +144,7 @@ var macAddressUserDB = {};
             });
 
         } catch(e) {
+            console.log('keep-alive: ', e);
             res.send(e);
         } finally {
             if (connection)
