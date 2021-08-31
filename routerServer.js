@@ -123,6 +123,36 @@ var macAddressUserDB = {};
         });
     }
 
+    routerServer.post('/keep-alive', (req,res) => {
+        console.log('body: ', req.body);
+        var timestamp = req.body.logCommands;
+        var macAddress = req.body.macAddress;
+
+        try {
+            var connection = getConnection();
+            connection.connect();
+
+            connection.query('update ' + database + '.MacAddressUserDB set timestamp = ? where MacAddress = ?',
+            [Array.from(logCommands, cmd => [timestamp, macAddress])], function (err, result) {
+                if (err) {
+                    console.log('keep-alive: ', err);
+                    res.send(err);
+                } else {
+                    console.log("Number of keep-alive rows updated: " + result.affectedRows);
+                    res.send('Ok');
+                }
+            });
+
+        } catch(e) {
+            res.send(e);
+        } finally {
+            if (connection)
+                connection.end();
+        }
+
+
+    });
+
     function getConnection(db) {
         var connection = mysql.createConnection({
             host     : db_host,
