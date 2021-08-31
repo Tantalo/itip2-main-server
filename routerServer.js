@@ -133,7 +133,7 @@ var macAddressUserDB = {};
             connection.connect();
 
             connection.query('update ' + database + '.MacAddressUserDB set timestamp = ? where MacAddress = ?',
-            [Array.from(logCommands, cmd => [timestamp, macAddress])], function (err, result) {
+            [timestamp, macAddress], function (err, result) {
                 if (err) {
                     console.log('keep-alive: ', err);
                     res.send(err);
