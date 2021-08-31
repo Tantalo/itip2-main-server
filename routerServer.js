@@ -125,7 +125,7 @@ var macAddressUserDB = {};
 
     routerServer.post('/keep-alive', (req,res) => {
         console.log('body: ', req.body);
-        var timestamp = req.body.logCommands;
+        var timestamp = req.body.timestamp;
         var macAddress = req.body.macAddress;
 
         try {
