@@ -128,10 +128,10 @@ var macAddressUserDB = {};
         var timestamp = req.body.timestamp;
         var macAddress = req.body.macAddress;
 
-        var remoteIp = request.headers['x-forwarded-for'] ||
-        request.connection.remoteAddress ||
-        request.socket.remoteAddress ||
-        request.connection.socket.remoteAddress;
+        var remoteIp = req.headers['x-forwarded-for'] ||
+        req.connection.remoteAddress ||
+        req.socket.remoteAddress ||
+        req.connection.socket.remoteAddress;
         remoteIp = remoteIp.split(',')[0];
         remoteIp = remoteIp.split(':').slice(-1); //in case the ip returned in a format: "::ffff:146.xxx.xxx.xxx"
 
