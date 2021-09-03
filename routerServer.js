@@ -127,6 +127,9 @@ var macAddressUserDB = {};
         console.log('body: ', req.body);
         var timestamp = req.body.timestamp;
         var macAddress = req.body.macAddress;
+        var remoteIp = req.headers['x-forwarded-for'];
+
+        console.log('remoteIp: ' + remoteIp);
 
         try {
             var connection = getConnection();
