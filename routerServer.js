@@ -3,7 +3,7 @@
 const db_host = 'localhost';
 const db_user = 'root';
 const db_pwd = 'Giacobbe$1';
-const database = 'itip2'
+const database = 'ITIP_mainDB'
 
 const express = require('express');
 const routerServer = express.Router();
