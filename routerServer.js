@@ -3,7 +3,9 @@
 const db_host = 'localhost';
 const db_user = 'root';
 const db_pwd = 'Giacobbe$1';
-const database = 'ITIP_mainDB'
+const ITIP_DB = 'ITIP_mainDB';
+const TCS_DB = 'TCS_mainDB'
+const IPH_DB = 'IPH_mainDB'
 
 const express = require('express');
 const routerServer = express.Router();
@@ -25,13 +27,14 @@ var macAddressUserDB = {};
     });
 
 
+    //for ITIP
     routerServer.post('/log', (req,res) => {
         console.log('body: ', req.body);
         var macAddress = req.body.macAddress;
         var logCommands = req.body.logCommands;
         var logEvents = req.body.logEvents;
 
-        getUserDB(macAddress).then(userDB => {
+        getUserDB(macAddress, ITIP_DB).then(userDB => {
             try {
                 var connection = getConnection(userDB);
                 connection.connect();
@@ -81,15 +84,59 @@ var macAddressUserDB = {};
 
     });
 
+    //for tcs & IPH
+    routerServer.post('/logTruck', (req,res) => {
+        console.log('body: ', req.body);
+        var logs = req.body.logs;
+        var db_prefix = req.body.db_prefix;
+
+        var db = db_prefix + '_DB';
+
+        getUserDB(macAddress, db).then(userDB => {
+            try {
+                var connection = getConnection(userDB);
+                connection.connect();
+
+                const promise1 = new Promise((resolve, reject) => {
+                    if (Array.isArray(logs) && logs.length > 0) {
+                        connection.query('insert into LogCommands (MacAddress, Timestamp, Command, Username) values ?',
+                        [Array.from(logs, cmd => [cmd.mac, cmd.date, cmd.operation, cmd.username])], function (err, result) {
+                            if (err) {
+                                console.log('LogCommands: ', err);
+                            } else {
+                                console.log("Number of LogCommands inserted: " + result.affectedRows);
+                            }
+                            resolve(true);
+                        });
+                    } else {
+                        resolve(true);
+                    }
+                });
+
+                Promise.all([promise1]).then(() => {
+                    res.send('Ok');
+                });
+            } catch(e) {
+                res.send(e);
+            } finally {
+                if (connection)
+                    connection.end();
+            }
+        });
+
+    });
+
     routerServer.post('/getUserDB', (req,res) => {
         var macAddress = req.body.macAddress;
+        var db = req.body.db;
         console.log('macAddress: ' + macAddress);
-        getUserDB(macAddress).then(userDB => {
+        console.log('db: ' + db);
+        getUserDB(macAddress, db).then(userDB => {
             res.send(userDB);
         });
     });
 
-    function getUserDB(macAddress) {
+    function getUserDB(macAddress, db) {
         return new Promise((resolve, reject) => {
             if (macAddressUserDB[macAddress] && macAddressUserDB[macAddress].trim() !== "") {
                 resolve(macAddressUserDB[macAddress]);
@@ -97,10 +144,10 @@ var macAddressUserDB = {};
                 let rtn = null;
 
                 try {
-                    var connection = getConnection();
+                    var connection = getConnection(db);
                     connection.connect();
 
-                    connection.query('SELECT UserDB from ' + database + '.MacAddressUserDB where MacAddress = ?', macAddress, function (error, results, fields) {
+                    connection.query('SELECT UserDB from ' + db + '.MacAddressUserDB where MacAddress = ?', macAddress, function (error, results, fields) {
 
                         if (error) {
                             console.log('Error selecting user db', error);
@@ -138,10 +185,10 @@ var macAddressUserDB = {};
         console.log('remoteIp: ' + remoteIp);
 
         try {
-            var connection = getConnection();
+            var connection = getConnection(ITIP_DB);
             connection.connect();
 
-            connection.query('update ' + database + '.MacAddressUserDB set Timestamp = ?, IpAddress = ? where MacAddress = ?',
+            connection.query('update ' + ITIP_DB + '.MacAddressUserDB set Timestamp = ?, IpAddress = ? where MacAddress = ?',
             [timestamp, remoteIp, macAddress], function (err, result) {
                 if (err) {
                     console.log('keep-alive: ', err);
@@ -168,7 +215,7 @@ var macAddressUserDB = {};
             host     : db_host,
             user     : db_user,
             password : db_pwd,
-            database : db ? db : database
+            database : db
         });
         return connection;
     }
