@@ -87,6 +87,7 @@ var macAddressUserDB = {};
     //for tcs & IPH
     routerServer.post('/logTruck', (req,res) => {
         console.log('body: ', req.body);
+        var macAddress = req.body.macAddress;
         var logs = req.body.logs;
         var db_prefix = req.body.db_prefix;
 
