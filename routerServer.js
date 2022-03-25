@@ -117,10 +117,10 @@ var macAddressUserDB = {};
                 });
 
                 Promise.all([promise1]).then(() => {
-                    res.send('Ok');
+                    res.json('Ok');
                 });
             } catch(e) {
-                res.send(e);
+                res.json(e);
             } finally {
                 if (connection)
                     connection.end();
