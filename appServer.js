@@ -6,5 +6,6 @@ appServer.use('/',routesServer);
 
 module.exports = {
     appServer: appServer,
-    portServer: 3090
+    portServer: 3090,
+    portServerTest: 3091
 };
