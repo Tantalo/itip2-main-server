@@ -94,7 +94,7 @@ var macAddressUserDB = {};
         console.log('macAddress', macAddress);
         console.log('logs', logs);
 
-        var db = db_prefix + '_DB';
+        var db = db_prefix + '_mainDB';
         getUserDB(macAddress, db).then(userDB => {
             try {
                 var connection = getConnection(userDB);
@@ -102,7 +102,7 @@ var macAddressUserDB = {};
 
                 const promise1 = new Promise((resolve, reject) => {
                     if (Array.isArray(logs) && logs.length > 0) {
-                        connection.query('insert into LogCommands (MacAddress, Timestamp, Command, Username) values ?',
+                        connection.query('insert into LogCommands (MacAddress, Datetime, Command, Username) values ?',
                         [Array.from(logs, cmd => [cmd.mac, cmd.date, cmd.operation, cmd.username])], function (err, result) {
                             if (err) {
                                 console.log('LogCommands: ', err);
@@ -125,6 +125,8 @@ var macAddressUserDB = {};
                 if (connection)
                     connection.end();
             }
+        }, (err) => {
+            console.log('error getting user DB', err);
         });
 
     });
