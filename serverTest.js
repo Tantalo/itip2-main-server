@@ -9,7 +9,7 @@ web.appWeb.listen(web.portWeb, () => {
 });
 */
 
-server.appServer.listen(server.portServer, () => {
+server.appServer.listen(server.portServerTest, () => {
 	console.log(`API REST running in http://localhost:${server.portServerTest}`);
 });
 
