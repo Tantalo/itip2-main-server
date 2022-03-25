@@ -91,8 +91,10 @@ var macAddressUserDB = {};
         var logs = req.body.logs;
         var db_prefix = req.body.db_prefix;
 
-        var db = db_prefix + '_DB';
+        console.log('macAddress', macAddress);
+        console.log('logs', logs);
 
+        var db = db_prefix + '_DB';
         getUserDB(macAddress, db).then(userDB => {
             try {
                 var connection = getConnection(userDB);
