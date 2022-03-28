@@ -106,22 +106,26 @@ routerServer.post('/logTruck', (req, res) => {
                 const promise1 = new Promise((resolve, reject) => {
                     if (Array.isArray(logs) && logs.length > 0) {
                         logs = logs.filter(log => log.Datetime > lastDatetimeLog);
-                        connection.query('insert into LogCommands (MacAddress, Datetime, Command, Username) values ?',
-                            [Array.from(logs, cmd => [cmd.mac, cmd.date, cmd.operation, cmd.username])], function (err, result) {
-                                if (err) {
-                                    console.log('LogCommands: ', err);
-                                } else {
-                                    console.log("Number of LogCommands inserted: " + result.affectedRows);
-                                }
-                                resolve(true);
-                            });
+                        if (logs.length > 0) {
+                            connection.query('insert into LogCommands (MacAddress, Datetime, Command, Username) values ?',
+                                [Array.from(logs, cmd => [cmd.mac, cmd.date, cmd.operation, cmd.username])], function (err, result) {
+                                    if (err) {
+                                        console.log('LogCommands: ', err);
+                                    } else {
+                                        console.log("Number of LogCommands inserted: " + result.affectedRows);
+                                    }
+                                    resolve(result.affectedRows);
+                                });
+                        } else {
+                            resolve(0);
+                        }
                     } else {
-                        resolve(true);
+                        resolve(0);
                     }
                 });
 
-                Promise.all([promise1]).then(() => {
-                    res.json('Ok');
+                Promise.all([promise1]).then((num) => {
+                    res.json(num);
                 });
             } catch (e) {
                 console.log(e);
