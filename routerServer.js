@@ -105,7 +105,8 @@ routerServer.post('/logTruck', (req, res) => {
 
                 const promise1 = new Promise((resolve, reject) => {
                     if (Array.isArray(logs) && logs.length > 0) {
-                        logs = logs.filter(log => log.Datetime > lastDatetimeLog);
+                        if (lastDatetimeLog)
+                            logs = logs.filter(log => log.Datetime > lastDatetimeLog);
                         if (logs.length > 0) {
                             connection.query('insert into LogCommands (MacAddress, Datetime, Command, Username) values ?',
                                 [Array.from(logs, cmd => [cmd.mac, cmd.date, cmd.operation, cmd.username])], function (err, result) {
