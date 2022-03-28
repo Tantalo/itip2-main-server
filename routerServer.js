@@ -109,7 +109,7 @@ routerServer.post('/logTruck', (req, res) => {
                             logs = logs.filter(log => log.Datetime > lastDatetimeLog);
                         if (logs.length > 0) {
                             connection.query('insert into LogCommands (MacAddress, Datetime, Command, Username) values ?',
-                                [Array.from(logs, cmd => [cmd.mac, cmd.date, cmd.operation, cmd.username])], function (err, result) {
+                                [Array.from(logs, cmd => [cmd.mac.toUpperCase(), cmd.date, cmd.operation, cmd.username])], function (err, result) {
                                     if (err) {
                                         console.log('LogCommands: ', err);
                                     } else {
