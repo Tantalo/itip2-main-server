@@ -96,9 +96,9 @@ routerServer.post('/logTruck', (req, res) => {
 
     var db = db_prefix + '_mainDB';
     getUserDB(macAddress, db).then(userDB => {
-        try {
+        getLastDatetimeLog(macAddress, userDB).then((lastDatetimeLog) => {
 
-            getLastDatetimeLog(macAddress, userDB).then((lastDatetimeLog) => {
+            try {
 
                 var connection = getConnection(userDB);
                 connection.connect();
@@ -123,17 +123,17 @@ routerServer.post('/logTruck', (req, res) => {
                 Promise.all([promise1]).then(() => {
                     res.json('Ok');
                 });
-            }, (err) => {
-                console.log(err);
+            } catch (e) {
+                console.log(e);
                 res.json(e);
-            });
-        } catch (e) {
-            console.log(e);
+            } finally {
+                if (connection)
+                    connection.end();
+            }
+        }, (err) => {
+            console.log(err);
             res.json(e);
-        } finally {
-            if (connection)
-                connection.end();
-        }
+        });
     }, (err) => {
         console.log('error getting user DB', err);
     });
