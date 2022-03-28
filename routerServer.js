@@ -190,6 +190,8 @@ function getUserDB(macAddress, db) {
 }
 
 function getLastDatetimeLog(macAddress, userDB) {
+    console.log('macAddress', macAddress);
+    console.log('userDB', userDB);
     return new Promise((resolve, reject) => {
         try {
             var connection = getConnection(userDB);
