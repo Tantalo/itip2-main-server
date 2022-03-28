@@ -96,7 +96,7 @@ routerServer.post('/logTruck', (req, res) => {
 
     var db = db_prefix + '_mainDB';
     getUserDB(macAddress, db).then(userDB => {
-        getLastDatetimeLog(macAddress, userDB).then((lastDatetimeLog) => {
+        getLastDatetimeLog(userDB).then((lastDatetimeLog) => {
 
             try {
 
