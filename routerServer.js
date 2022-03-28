@@ -109,7 +109,7 @@ routerServer.post('/logTruck', (req, res) => {
                             logs = logs.filter(log => log.Datetime > lastDatetimeLog);
                         if (logs.length > 0) {
                             connection.query('insert into LogCommands (MacAddress, Datetime, Command, Username) values ?',
-                                [Array.from(logs, cmd => [macAddress.toUpperCase(), cmd.date, cmd.operation, cmd.username])], function (err, result) {
+                                [Array.from(logs, cmd => [cmd.mac.toUpperCase(), cmd.date, cmd.operation, cmd.username])], function (err, result) {
                                     if (err) {
                                         console.log('LogCommands: ', err);
                                     } else {
@@ -189,15 +189,14 @@ function getUserDB(macAddress, db) {
     });
 }
 
-function getLastDatetimeLog(macAddress, userDB) {
-    console.log('macAddress', macAddress);
+function getLastDatetimeLog(userDB) {
     console.log('userDB', userDB);
     return new Promise((resolve, reject) => {
         try {
             var connection = getConnection(userDB);
             connection.connect();
 
-            connection.query('SELECT max(Datetime) as Datetime FROM `LogCommands` WHERE MacAddress = ?', macAddress, function (error, results, fields) {
+            connection.query('SELECT max(Datetime) as Datetime FROM `LogCommands` ', function (error, results, fields) {
 
                 if (error) {
                     console.log('Error selecting from LogCommands', error);
