@@ -194,16 +194,16 @@ function getLastDatetimeLog(macAddress, userDB) {
 
                 if (error) {
                     console.log('Error selecting from LogCommands', error);
-                    reject.json(error);
+                    reject(error);
                 } else {
                     console.log('results[0]: ', results[0]);
-                    resolve.json(results[0].Datetime);
+                    resolve(results[0].Datetime);
                 }
 
             });
 
         } catch (e) {
-            reject.json(e);
+            reject(e);
         } finally {
             if (connection)
                 connection.end();
