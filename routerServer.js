@@ -94,6 +94,7 @@ routerServer.post('/logTruck', (req, res) => {
     var db = db_prefix + '_mainDB';
     getUserDB(macAddress, db).then(userDB => {
         getLastDatetimeLog(userDB).then((lastDatetimeLog) => {
+            console.log('lastDatetimeLog: ' + lastDatetimeLog);
 
             try {
 
@@ -103,7 +104,11 @@ routerServer.post('/logTruck', (req, res) => {
                 const promise1 = new Promise((resolve, reject) => {
                     if (Array.isArray(logs) && logs.length > 0) {
                         if (lastDatetimeLog)
-                            logs = logs.filter(log => log.Datetime > lastDatetimeLog);
+                            logs = logs.filter(log => {
+                                console.log('log.Datetime: ' + log.Datetime);
+                                console.log('log.Datetime > lastDatetimeLog', log.Datetime > lastDatetimeLog);
+                                return log.Datetime > lastDatetimeLog
+                            });
                         console.log('Log length: ' + logs.length);
                         if (logs.length > 0) {
                             connection.query('insert into LogCommands (MacAddress, Datetime, Command, Username) values ?',
