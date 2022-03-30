@@ -91,9 +91,6 @@ routerServer.post('/logTruck', (req, res) => {
     var logs = req.body.logs;
     var db_prefix = req.body.db_prefix;
 
-    console.log('macAddress', macAddress);
-    console.log('logs', logs);
-
     var db = db_prefix + '_mainDB';
     getUserDB(macAddress, db).then(userDB => {
         getLastDatetimeLog(userDB).then((lastDatetimeLog) => {
@@ -107,9 +104,10 @@ routerServer.post('/logTruck', (req, res) => {
                     if (Array.isArray(logs) && logs.length > 0) {
                         if (lastDatetimeLog)
                             logs = logs.filter(log => log.Datetime > lastDatetimeLog);
+                        console.log('Log length: ' + logs.length);
                         if (logs.length > 0) {
                             connection.query('insert into LogCommands (MacAddress, Datetime, Command, Username) values ?',
-                                [Array.from(logs, cmd => [cmd.mac.toUpperCase(), cmd.date, cmd.operation, cmd.username])], function (err, result) {
+                                [Array.from(logs, cmd => [cmd.mac, cmd.date, cmd.operation, cmd.username])], function (err, result) {
                                     if (err) {
                                         console.log('LogCommands: ', err);
                                     } else {
