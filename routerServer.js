@@ -105,9 +105,9 @@ routerServer.post('/logTruck', (req, res) => {
                     if (Array.isArray(logs) && logs.length > 0) {
                         if (lastDatetimeLog)
                             logs = logs.filter(log => {
-                                console.log('log.Datetime: ' + log.Datetime);
-                                console.log('log.Datetime > lastDatetimeLog', log.Datetime > lastDatetimeLog);
-                                return log.Datetime > lastDatetimeLog
+                                console.log('log.date: ' + log.Datetime);
+                                console.log('log.date > lastDatetimeLog', log.date > lastDatetimeLog);
+                                return log.date > lastDatetimeLog
                             });
                         console.log('Log length: ' + logs.length);
                         if (logs.length > 0) {
