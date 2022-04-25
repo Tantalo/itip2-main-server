@@ -1,6 +1,6 @@
 'use strict';
 
-//const web = require('./appWeb')
+const web = require('./appWeb')
 const server = require('./appServer')
 
 
