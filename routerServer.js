@@ -26,7 +26,7 @@ routerServer.get('/', (req, res) => {
     res.send({ message: 'Hello World from Main Server!' });
 });
 
-routerWeb.get('/privacy', (req,res) => {
+routerServer.get('/privacy', (req,res) => {
     res.sendFile(process.cwd()+"/privacy.html")
 });
 
