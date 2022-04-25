@@ -15,6 +15,10 @@ routerWeb.get('/', (req,res) => {
 });
 */
 
+routerWeb.get('/', (req, res) => {
+    res.send({ message: 'Hello World from Main Web!' });
+});
+
 routerWeb.get('/privacy', (req,res) => {
     res.sendFile(process.cwd()+"/privacy.html")
 });

@@ -26,6 +26,9 @@ routerServer.get('/', (req, res) => {
     res.send({ message: 'Hello World from Main Server!' });
 });
 
+routerWeb.get('/privacy', (req,res) => {
+    res.sendFile(process.cwd()+"/privacy.html")
+});
 
 //for ITIP
 routerServer.post('/log', (req, res) => {
