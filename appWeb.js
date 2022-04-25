@@ -7,5 +7,5 @@ appWeb.use('/',routerWeb);
 
 module.exports = {
     appWeb: appWeb,
-    portWeb: 3080
+    portWeb: 80
 };
