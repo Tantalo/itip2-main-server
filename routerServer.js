@@ -26,8 +26,8 @@ routerServer.get('/', (req, res) => {
     res.send({ message: 'Hello World from Main Server!' });
 });
 
-routerServer.get('/privacy', (req,res) => {
-    res.sendFile(process.cwd()+"/privacy.html")
+routerServer.get('/privacy', (req, res) => {
+    res.sendFile(process.cwd() + "/privacy.html")
 });
 
 //for ITIP
@@ -91,60 +91,94 @@ routerServer.post('/log', (req, res) => {
 routerServer.post('/logTruck', (req, res) => {
     console.log('body: ', req.body);
     var macAddress = req.body.macAddress;
-    var logs = req.body.logs;
     var db_prefix = req.body.db_prefix;
+    var logGps = req.body.logGps;
 
     var db = db_prefix + '_mainDB';
     getUserDB(macAddress, db).then(userDB => {
-        getLastDatetimeLog(userDB).then((lastDatetimeLog) => {
-            console.log('lastDatetimeLog: ' + lastDatetimeLog);
+
+        if (logGps) {
+
+            var latitude = req.body.latitude;
+            var longitude = req.body.longitude;
 
             try {
-
                 var connection = getConnection(userDB);
                 connection.connect();
 
-                const promise1 = new Promise((resolve, reject) => {
-                    if (Array.isArray(logs) && logs.length > 0) {
-                        if (lastDatetimeLog)
-                            logs = logs.filter(log => {
-                                console.log('log.date: ' + log.date);
-                                console.log('log.date > lastDatetimeLog', log.date > lastDatetimeLog);
-                                return log.date > lastDatetimeLog
-                            });
-                        console.log('Log length: ' + logs.length);
-                        if (logs.length > 0) {
-                            connection.query('insert into LogCommands (MacAddress, Datetime, Command, Username) values ?',
-                                [Array.from(logs, cmd => [cmd.mac, cmd.date, cmd.operation, cmd.username])], function (err, result) {
-                                    if (err) {
-                                        console.log('LogCommands: ', err);
-                                    } else {
-                                        console.log("Number of LogCommands inserted: " + result.affectedRows);
-                                    }
-                                    resolve(result.affectedRows);
-                                });
-                        } else {
-                            resolve(0);
-                        }
-                    } else {
-                        resolve(0);
-                    }
-                });
-
-                Promise.all([promise1]).then((num) => {
-                    res.json(num);
-                });
+                connection.query('insert into LogGpsCoord (MacAddress, Datetime, Latitude, Longitude) values (?, ?, ?, ?)',
+                                    [macAddress, (new Date()).toISOString(), latitude, longitude], function (err, result) {
+                                        if (err) {
+                                            console.log('LogGpsCoord: ', err);
+                                        } else {
+                                            console.log("Number of LogCommands inserted: " + result.affectedRows);
+                                        }
+                                        resolve(result.affectedRows);
+                                    });
+                
+                
             } catch (e) {
-                console.log(e);
+                console.log('LogGpsCoord: ', e);
                 res.json(e);
             } finally {
                 if (connection)
                     connection.end();
             }
-        }, (err) => {
-            console.log(err);
-            res.json(e);
-        });
+
+        } else {
+            var logs = req.body.logs;
+
+            getLastDatetimeLog(userDB).then((lastDatetimeLog) => {
+                console.log('lastDatetimeLog: ' + lastDatetimeLog);
+
+                try {
+
+                    var connection = getConnection(userDB);
+                    connection.connect();
+
+                    const promise1 = new Promise((resolve, reject) => {
+                        if (Array.isArray(logs) && logs.length > 0) {
+                            if (lastDatetimeLog)
+                                logs = logs.filter(log => {
+                                    console.log('log.date: ' + log.date);
+                                    console.log('log.date > lastDatetimeLog', log.date > lastDatetimeLog);
+                                    return log.date > lastDatetimeLog
+                                });
+                            console.log('Log length: ' + logs.length);
+                            if (logs.length > 0) {
+                                connection.query('insert into LogCommands (MacAddress, Datetime, Command, Username) values ?',
+                                    [Array.from(logs, cmd => [cmd.mac, cmd.date, cmd.operation, cmd.username])], function (err, result) {
+                                        if (err) {
+                                            console.log('LogCommands: ', err);
+                                        } else {
+                                            console.log("Number of LogCommands inserted: " + result.affectedRows);
+                                        }
+                                        resolve(result.affectedRows);
+                                    });
+                            } else {
+                                resolve(0);
+                            }
+                        } else {
+                            resolve(0);
+                        }
+                    });
+
+                    Promise.all([promise1]).then((num) => {
+                        res.json(num);
+                    });
+                } catch (e) {
+                    console.log(e);
+                    res.json(e);
+                } finally {
+                    if (connection)
+                        connection.end();
+                }
+            }, (err) => {
+                console.log(err);
+                res.json(e);
+            });
+        }
+
     }, (err) => {
         console.log('error getting user DB', err);
     });
