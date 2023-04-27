@@ -106,17 +106,23 @@ routerServer.post('/logTruck', (req, res) => {
                 var connection = getConnection(userDB);
                 connection.connect();
 
-                connection.query('insert into LogGpsCoord (MacAddress, Datetime, Latitude, Longitude) values (?, ?, ?, ?)',
-                                    [macAddress, (new Date()).toISOString(), latitude, longitude], function (err, result) {
-                                        if (err) {
-                                            console.log('LogGpsCoord: ', err);
-                                        } else {
-                                            console.log("Number of LogCommands inserted: " + result.affectedRows);
-                                        }
-                                        resolve(result.affectedRows);
-                                    });
-                
-                
+                const promise1 = new Promise((resolve, reject) => {
+
+                    connection.query('insert into LogGpsCoord (MacAddress, Datetime, Latitude, Longitude) values (?, ?, ?, ?)',
+                        [macAddress, (new Date()).toISOString(), latitude, longitude], function (err, result) {
+                            if (err) {
+                                console.log('LogGpsCoord: ', err);
+                            } else {
+                                console.log("Number of LogCommands inserted: " + result.affectedRows);
+                            }
+                            resolve(result.affectedRows);
+                        });
+                });
+
+                Promise.all([promise1]).then((num) => {
+                    res.json(num);
+                });
+
             } catch (e) {
                 console.log('LogGpsCoord: ', e);
                 res.json(e);
