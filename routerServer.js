@@ -109,8 +109,8 @@ routerServer.post('/logTruck', (req, res) => {
 
                 const promise1 = new Promise((resolve, reject) => {
 
-                    connection.query('insert into LogGpsCoord (MacAddress, Datetime, Latitude, Longitude) values ?',
-                        [Array.from([macAddress, (new Date()).toISOString(), latitude, longitude])], function (err, result) {
+                    connection.query('insert into LogGpsCoord VALUES ?',
+                        [{ MacAddress: macAddress, Datetime: (new Date()).toISOString(), Latitude: latitude, Longitude: longitude }], function (err, result) {
                             if (err) {
                                 console.log('LogGpsCoord: ', err);
                                 resolve(err);
