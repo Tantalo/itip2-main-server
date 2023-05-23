@@ -113,15 +113,16 @@ routerServer.post('/logTruck', (req, res) => {
                         [[macAddress, (new Date()).toISOString(), latitude, longitude]], function (err, result) {
                             if (err) {
                                 console.log('LogGpsCoord: ', err);
+                                resolve(err);
                             } else {
-                                console.log("Number of LogCommands inserted: " + result.affectedRows);
+                                console.log("Number of GpsCoord inserted: " + result.affectedRows);
+                                resolve(result.affectedRows);
                             }
-                            resolve(result.affectedRows);
                         });
                 });
 
-                Promise.all([promise1]).then((num) => {
-                    res.json(num);
+                Promise.all([promise1]).then((result) => {
+                    res.json(result);
                 });
 
             } catch (e) {
@@ -134,6 +135,7 @@ routerServer.post('/logTruck', (req, res) => {
 
         }, (err) => {
             console.log('error getting scheda DB', err);
+            res.json(err);
         });
 
     } else {
@@ -193,6 +195,7 @@ routerServer.post('/logTruck', (req, res) => {
 
         }, (err) => {
             console.log('error getting user DB', err);
+            res.json(err);
         });
     }
 
@@ -257,6 +260,7 @@ function getSchedaDB(macAddress, db) {
 
                     if (error) {
                         console.log('Error selecting scheda db', error);
+                        reject(error);
                     } else {
                         console.log('results[0]: ', results[0]);
                         rtn = results[0].DB_Scheda;
