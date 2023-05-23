@@ -14,6 +14,7 @@ var bodyParser = require('body-parser');
 var mysql = require('mysql');
 
 var macAddressUserDB = {};
+var macAddressSchedaDB = {};
 
 
 routerServer.use(cors());
@@ -95,15 +96,15 @@ routerServer.post('/logTruck', (req, res) => {
     var logGps = req.body.logGps;
 
     var db = db_prefix + '_mainDB';
-    getUserDB(macAddress, db).then(userDB => {
 
-        if (logGps) {
+    if (logGps) {
 
+        getSchedaDB(macAddress, db).then(schedaDB => {
             var latitude = req.body.latitude;
             var longitude = req.body.longitude;
 
             try {
-                var connection = getConnection(userDB);
+                var connection = getConnection(schedaDB);
                 connection.connect();
 
                 const promise1 = new Promise((resolve, reject) => {
@@ -131,7 +132,13 @@ routerServer.post('/logTruck', (req, res) => {
                     connection.end();
             }
 
-        } else {
+        }, (err) => {
+            console.log('error getting scheda DB', err);
+        });
+
+    } else {
+        getUserDB(macAddress, db).then(userDB => {
+
             var logs = req.body.logs;
 
             getLastDatetimeLog(userDB).then((lastDatetimeLog) => {
@@ -183,11 +190,11 @@ routerServer.post('/logTruck', (req, res) => {
                 console.log(err);
                 res.json(e);
             });
-        }
 
-    }, (err) => {
-        console.log('error getting user DB', err);
-    });
+        }, (err) => {
+            console.log('error getting user DB', err);
+        });
+    }
 
 });
 
@@ -226,6 +233,40 @@ function getUserDB(macAddress, db) {
                 });
             } catch (e) {
                 console.log('Error in getUserDB', e);
+                reject(e);
+            } finally {
+                if (connection)
+                    connection.end();
+            }
+        }
+    });
+}
+
+function getSchedaDB(macAddress, db) {
+    return new Promise((resolve, reject) => {
+        if (macAddressSchedaDB[macAddress] && macAddressSchedaDB[macAddress].trim() !== "") {
+            resolve(macAddressSchedaDB[macAddress]);
+        } else {
+            let rtn = null;
+
+            try {
+                var connection = getConnection(db);
+                connection.connect();
+
+                connection.query('SELECT DB_Scheda from ' + db + '.MacAddressSchedaDB where MacAddress = ?', macAddress, function (error, results, fields) {
+
+                    if (error) {
+                        console.log('Error selecting scheda db', error);
+                    } else {
+                        console.log('results[0]: ', results[0]);
+                        rtn = results[0].DB_Scheda;
+                        macAddressSchedaDB[macAddress] = rtn;
+                    }
+
+                    resolve(rtn);
+                });
+            } catch (e) {
+                console.log('Error in getSchedaDB', e);
                 reject(e);
             } finally {
                 if (connection)
