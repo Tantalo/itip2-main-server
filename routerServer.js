@@ -256,14 +256,14 @@ function getSchedaDB(macAddress, db) {
                 var connection = getConnection(db);
                 connection.connect();
 
-                connection.query('SELECT DB_Scheda from ' + db + '.MacAddressSchedaDB where MacAddress = ?', macAddress, function (error, results, fields) {
+                connection.query('SELECT SchedaDB from ' + db + '.MacAddressSchedaDB where MacAddress = ?', macAddress, function (error, results, fields) {
 
                     if (error) {
                         console.log('Error selecting scheda db', error);
                         reject(error);
                     } else {
                         console.log('results[0]: ', results[0]);
-                        rtn = results[0].DB_Scheda;
+                        rtn = results[0].SchedaDB;
                         macAddressSchedaDB[macAddress] = rtn;
                     }
 
